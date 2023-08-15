@@ -1,0 +1,282 @@
+<html>
+<head>
+<title>Studio.cpp</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #bbb529;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6a8759;}
+.s3 { color: #cc7832;}
+.s4 { color: #6897bb;}
+.s5 { color: #808080;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+Studio.cpp</font>
+</center></td></tr></table>
+<pre><span class="s0">#include </span><span class="s2">&quot;../include/Studio.h&quot;</span>
+<span class="s0">#include </span><span class="s2">&lt;iostream&gt;</span>
+<span class="s0">#include </span><span class="s2">&quot;string.h&quot;</span>
+<span class="s0">#include </span><span class="s2">&lt;fstream&gt;</span>
+<span class="s0">#include </span><span class="s2">&lt;vector&gt;</span>
+
+<span class="s3">using namespace </span><span class="s1">std</span><span class="s3">;</span>
+
+<span class="s1">Studio::Studio(): open(</span><span class="s3">false</span><span class="s1">)</span><span class="s3">, </span><span class="s1">trainers()</span><span class="s3">, </span><span class="s1">workout_options()</span><span class="s3">,</span><span class="s1">actionsLog() {</span>
+
+<span class="s1">}</span><span class="s3">;</span>
+
+<span class="s1">Studio::Studio(</span><span class="s3">const </span><span class="s1">std::string &amp;configFilePath):open(</span><span class="s3">false</span><span class="s1">)</span><span class="s3">, </span><span class="s1">trainers()</span><span class="s3">, </span><span class="s1">workout_options()</span><span class="s3">,</span><span class="s1">actionsLog(){</span>
+    <span class="s1">ifstream input</span><span class="s3">;</span>
+    <span class="s1">input.open(configFilePath)</span><span class="s3">;</span>
+    <span class="s1">string line</span><span class="s3">;</span>
+    <span class="s3">int </span><span class="s1">num_of_trainers = </span><span class="s4">0</span><span class="s3">, </span><span class="s1">counter = </span><span class="s4">0</span><span class="s3">;</span>
+    <span class="s3">bool </span><span class="s1">got_trainers = </span><span class="s3">false;</span>
+    <span class="s3">while </span><span class="s1">(getline(input</span><span class="s3">,</span><span class="s1">line)) {</span>
+        <span class="s3">if</span><span class="s1">(line[</span><span class="s4">0</span><span class="s1">] == </span><span class="s2">'#'</span><span class="s1">||line[</span><span class="s4">0</span><span class="s1">] == </span><span class="s2">'</span><span class="s3">\n</span><span class="s2">'</span><span class="s1">)</span>
+            <span class="s3">continue;</span>
+        <span class="s3">else</span><span class="s1">{</span>
+            <span class="s3">if</span><span class="s1">(num_of_trainers == </span><span class="s4">0</span><span class="s1">) {</span>
+                <span class="s1">num_of_trainers = std::stoi(line)</span><span class="s3">; </span><span class="s5">// how many &quot;push.back&quot;s. (Vector size)</span>
+                <span class="s1">getline(input</span><span class="s3">,</span><span class="s1">line)</span><span class="s3">;</span>
+            <span class="s1">}</span>
+            <span class="s3">else if</span><span class="s1">(!got_trainers){</span>
+                <span class="s1">size_t i = </span><span class="s4">0</span><span class="s3">;</span>
+                <span class="s3">while</span><span class="s1">(i &lt; line.length()){</span>
+                    <span class="s1">string trainerName = </span><span class="s2">&quot;&quot;</span><span class="s3">;</span>
+                    <span class="s3">while</span><span class="s1">((line[i] != </span><span class="s2">','</span><span class="s1">) &amp;&amp; (i != line.size())){</span>
+                        <span class="s1">trainerName += line[i]</span><span class="s3">;</span>
+                        <span class="s1">i++</span><span class="s3">;</span>
+                    <span class="s1">}</span>
+                    <span class="s3">int </span><span class="s1">trainerCapacity = std::stoi(trainerName)</span><span class="s3">;</span>
+                    <span class="s1">Trainer* tr1 = </span><span class="s3">new </span><span class="s1">Trainer(trainerCapacity)</span><span class="s3">;</span>
+                    <span class="s1">Studio::trainers.push_back(tr1)</span><span class="s3">;</span>
+<span class="s5">//                    std:cout &lt;&lt; &quot;trainers size is &quot; &lt;&lt; std::to_string(trainers.size()) &lt;&lt; std::endl;</span>
+                    <span class="s1">i++</span><span class="s3">;</span>
+                <span class="s1">}</span>
+                <span class="s1">got_trainers = </span><span class="s3">true;</span>
+                <span class="s1">getline(input</span><span class="s3">,</span><span class="s1">line)</span><span class="s3">;</span>
+            <span class="s1">}</span>
+            <span class="s3">else</span><span class="s1">{</span>
+                <span class="s3">if</span><span class="s1">(line != </span><span class="s2">&quot;&quot;</span><span class="s1">) {</span>
+                    <span class="s1">string w_name = </span><span class="s2">&quot;&quot;</span><span class="s3">;</span>
+                    <span class="s3">int </span><span class="s1">w_price = </span><span class="s4">0</span><span class="s3">;</span>
+                    <span class="s3">int </span><span class="s1">firstComma = line.find(</span><span class="s2">','</span><span class="s1">)</span><span class="s3">;</span>
+                    <span class="s3">int </span><span class="s1">secondComma = line.find(</span><span class="s2">','</span><span class="s3">, </span><span class="s1">firstComma + </span><span class="s4">1</span><span class="s1">)</span><span class="s3">;</span>
+                    <span class="s1">WorkoutType workoutType</span><span class="s3">;</span>
+                    <span class="s1">w_name = line.substr(</span><span class="s4">0</span><span class="s3">, </span><span class="s1">firstComma)</span><span class="s3">;</span>
+                    <span class="s3">if </span><span class="s1">(line[firstComma + </span><span class="s4">2</span><span class="s1">] == </span><span class="s2">'A'</span><span class="s1">)</span>
+                        <span class="s1">workoutType = ANAEROBIC</span><span class="s3">;</span>
+                    <span class="s3">else if </span><span class="s1">(line[firstComma + </span><span class="s4">2</span><span class="s1">] == </span><span class="s2">'M'</span><span class="s1">)</span>
+                        <span class="s1">workoutType = MIXED</span><span class="s3">;</span>
+                    <span class="s3">else</span>
+                        <span class="s1">workoutType = CARDIO</span><span class="s3">;</span>
+                    <span class="s1">w_price = stoi(line.substr(secondComma + </span><span class="s4">1</span><span class="s3">, </span><span class="s1">line.length()))</span><span class="s3">;</span>
+                    <span class="s1">Workout *workout = </span><span class="s3">new </span><span class="s1">Workout(counter</span><span class="s3">, </span><span class="s1">w_name</span><span class="s3">, </span><span class="s1">w_price</span><span class="s3">, </span><span class="s1">workoutType)</span><span class="s3">;</span>
+                    <span class="s1">workout_options.push_back(*workout)</span><span class="s3">;</span>
+                    <span class="s1">counter++</span><span class="s3">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+    <span class="s1">input.close()</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s3">void </span><span class="s1">Studio::start(){</span>
+    <span class="s1">open = </span><span class="s3">true;</span>
+    <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;Studio is now open!&quot;</span><span class="s1">&lt;&lt;endl</span><span class="s3">;</span>
+    <span class="s1">string input</span><span class="s3">;</span>
+    <span class="s3">int </span><span class="s1">trId = </span><span class="s4">0</span><span class="s3">;</span>
+    <span class="s3">int </span><span class="s1">customerCounter = </span><span class="s4">0</span><span class="s3">;</span>
+    <span class="s3">while </span><span class="s1">(input != </span><span class="s2">&quot;closeall&quot;</span><span class="s1">) {</span>
+        <span class="s1">getline(cin</span><span class="s3">, </span><span class="s1">input)</span><span class="s3">; </span><span class="s5">//open</span>
+        <span class="s3">if </span><span class="s1">(input.substr(</span><span class="s4">0</span><span class="s3">, </span><span class="s4">4</span><span class="s1">) == </span><span class="s2">&quot;open&quot;</span><span class="s1">) {</span>
+            <span class="s1">vector&lt;Customer *&gt; custList</span><span class="s3">;</span>
+            <span class="s1">trId = stoi(input.substr(</span><span class="s4">5</span><span class="s3">, </span><span class="s4">1</span><span class="s1">))</span><span class="s3">;</span>
+            <span class="s1">size_t index = </span><span class="s4">5</span><span class="s3">;</span>
+            <span class="s3">while </span><span class="s1">(index &lt; input.length() - </span><span class="s4">2</span><span class="s1">) {</span>
+                <span class="s1">index += </span><span class="s4">2</span><span class="s3">;</span>
+                <span class="s1">string cus_name = </span><span class="s2">&quot;&quot;</span><span class="s3">;</span>
+                <span class="s3">while </span><span class="s1">(index &lt;= input.length() &amp;&amp; input.substr(index</span><span class="s3">, </span><span class="s4">1</span><span class="s1">) != </span><span class="s2">&quot;,&quot;</span><span class="s1">) {</span>
+                    <span class="s1">cus_name += input.substr(index</span><span class="s3">, </span><span class="s4">1</span><span class="s1">)</span><span class="s3">;</span>
+                    <span class="s1">index++</span><span class="s3">;</span>
+                <span class="s1">}</span>
+                <span class="s1">string this_order = input.substr(index + </span><span class="s4">1</span><span class="s3">, </span><span class="s4">3</span><span class="s1">)</span><span class="s3">;</span>
+                <span class="s1">index += </span><span class="s4">3</span><span class="s3">;</span>
+                <span class="s3">if </span><span class="s1">(this_order == </span><span class="s2">&quot;swt&quot;</span><span class="s1">) {</span>
+                    <span class="s1">Customer *customer = </span><span class="s3">new </span><span class="s1">SweatyCustomer(cus_name</span><span class="s3">, </span><span class="s1">customerCounter)</span><span class="s3">;</span>
+                    <span class="s1">custList.push_back(customer)</span><span class="s3">;</span>
+                <span class="s1">} </span><span class="s3">else if </span><span class="s1">(this_order == </span><span class="s2">&quot;chp&quot;</span><span class="s1">) {</span>
+                    <span class="s1">Customer *customer = </span><span class="s3">new </span><span class="s1">CheapCustomer(cus_name</span><span class="s3">, </span><span class="s1">customerCounter)</span><span class="s3">;</span>
+                    <span class="s1">custList.push_back(customer)</span><span class="s3">;</span>
+                <span class="s1">} </span><span class="s3">else if </span><span class="s1">(this_order == </span><span class="s2">&quot;mcl&quot;</span><span class="s1">) {</span>
+                    <span class="s1">Customer *customer = </span><span class="s3">new </span><span class="s1">HeavyMuscleCustomer(cus_name</span><span class="s3">, </span><span class="s1">customerCounter)</span><span class="s3">;</span>
+                    <span class="s1">custList.push_back(customer)</span><span class="s3">;</span>
+                <span class="s1">} </span><span class="s3">else if </span><span class="s1">(this_order == </span><span class="s2">&quot;fbd&quot;</span><span class="s1">) {</span>
+                    <span class="s1">Customer *customer = </span><span class="s3">new </span><span class="s1">FullBodyCustomer(cus_name</span><span class="s3">, </span><span class="s1">customerCounter)</span><span class="s3">;</span>
+                    <span class="s1">custList.push_back(customer)</span><span class="s3">;</span>
+                <span class="s1">}</span>
+                <span class="s1">customerCounter++</span><span class="s3">;</span>
+
+            <span class="s1">}</span>
+
+            <span class="s1">BaseAction *open_input = </span><span class="s3">new </span><span class="s1">OpenTrainer(trId</span><span class="s3">, </span><span class="s1">custList)</span><span class="s3">;</span>
+            <span class="s1">open_input-&gt;act(*</span><span class="s3">this</span><span class="s1">)</span><span class="s3">;</span>
+            <span class="s1">actionsLog.push_back(open_input)</span><span class="s3">;</span>
+
+        <span class="s1">}</span>
+        <span class="s3">else if </span><span class="s1">(input.substr(</span><span class="s4">0</span><span class="s3">, </span><span class="s4">5</span><span class="s1">) == </span><span class="s2">&quot;order&quot;</span><span class="s1">) {</span>
+            <span class="s1">BaseAction *order = </span><span class="s3">new </span><span class="s1">Order(stoi(input.substr(</span><span class="s4">6</span><span class="s3">, </span><span class="s4">1</span><span class="s1">)))</span><span class="s3">;</span>
+            <span class="s1">order-&gt;act(*</span><span class="s3">this</span><span class="s1">)</span><span class="s3">;</span>
+            <span class="s1">actionsLog.push_back(order)</span><span class="s3">;</span>
+        <span class="s1">}</span>
+        <span class="s3">else if </span><span class="s1">(input.substr(</span><span class="s4">0</span><span class="s3">, </span><span class="s4">4</span><span class="s1">) == </span><span class="s2">&quot;move&quot;</span><span class="s1">) {</span>
+            <span class="s3">int </span><span class="s1">from = stoi(input.substr(</span><span class="s4">5</span><span class="s3">, </span><span class="s4">1</span><span class="s1">))</span><span class="s3">;</span>
+            <span class="s3">int </span><span class="s1">to = stoi(input.substr(</span><span class="s4">7</span><span class="s3">, </span><span class="s4">1</span><span class="s1">))</span><span class="s3">;</span>
+            <span class="s3">int </span><span class="s1">customer = stoi(input.substr(</span><span class="s4">9</span><span class="s3">, </span><span class="s4">1</span><span class="s1">))</span><span class="s3">;</span>
+            <span class="s1">BaseAction *movecustomer = </span><span class="s3">new </span><span class="s1">MoveCustomer(from</span><span class="s3">, </span><span class="s1">to</span><span class="s3">, </span><span class="s1">customer)</span><span class="s3">;</span>
+            <span class="s1">movecustomer-&gt;act(*</span><span class="s3">this</span><span class="s1">)</span><span class="s3">;</span>
+            <span class="s1">actionsLog.push_back(movecustomer)</span><span class="s3">;</span>
+
+        <span class="s1">}</span>
+        <span class="s3">else if </span><span class="s1">(input.substr(</span><span class="s4">0</span><span class="s3">, </span><span class="s4">6</span><span class="s1">) == </span><span class="s2">&quot;status&quot;</span><span class="s1">) {</span>
+            <span class="s3">int </span><span class="s1">trId = stoi(input.substr(</span><span class="s4">7</span><span class="s3">, </span><span class="s4">1</span><span class="s1">))</span><span class="s3">;</span>
+            <span class="s1">BaseAction *status = </span><span class="s3">new </span><span class="s1">PrintTrainerStatus(trId)</span><span class="s3">;</span>
+            <span class="s1">status-&gt;act(*</span><span class="s3">this</span><span class="s1">)</span><span class="s3">;</span>
+            <span class="s1">actionsLog.push_back(status)</span><span class="s3">;</span>
+        <span class="s1">}</span>
+        <span class="s3">else if </span><span class="s1">((input.substr(</span><span class="s4">0</span><span class="s3">, </span><span class="s4">5</span><span class="s1">) == </span><span class="s2">&quot;close&quot;</span><span class="s1">) &amp;&amp; input.length() &lt; </span><span class="s4">8</span><span class="s1">) {</span>
+            <span class="s3">int </span><span class="s1">customerId = stoi(input.substr(</span><span class="s4">6</span><span class="s3">, </span><span class="s4">1</span><span class="s1">))</span><span class="s3">;</span>
+            <span class="s1">BaseAction *close = </span><span class="s3">new </span><span class="s1">Close(customerId)</span><span class="s3">;</span>
+            <span class="s1">close-&gt;act(*</span><span class="s3">this</span><span class="s1">)</span><span class="s3">;</span>
+            <span class="s1">actionsLog.push_back(close)</span><span class="s3">;</span>
+        <span class="s1">}</span>
+        <span class="s3">else if </span><span class="s1">(input == </span><span class="s2">&quot;closeall&quot;</span><span class="s1">) {</span>
+            <span class="s1">BaseAction *closeall = </span><span class="s3">new </span><span class="s1">CloseAll()</span><span class="s3">;</span>
+            <span class="s1">closeall-&gt;act(*</span><span class="s3">this</span><span class="s1">)</span><span class="s3">;</span>
+            <span class="s1">actionsLog.push_back(closeall)</span><span class="s3">; </span><span class="s5">// check</span>
+            <span class="s1">clean()</span><span class="s3">;</span>
+        <span class="s1">}</span>
+        <span class="s3">else if </span><span class="s1">(input == </span><span class="s2">&quot;workout_options&quot;</span><span class="s1">) {</span>
+            <span class="s1">BaseAction *workoutoptions = </span><span class="s3">new </span><span class="s1">PrintWorkoutOptions()</span><span class="s3">;</span>
+            <span class="s1">workoutoptions-&gt;act(*</span><span class="s3">this</span><span class="s1">)</span><span class="s3">;</span>
+            <span class="s1">actionsLog.push_back(workoutoptions)</span><span class="s3">;</span>
+        <span class="s1">}</span>
+        <span class="s3">else if </span><span class="s1">(input == </span><span class="s2">&quot;log&quot;</span><span class="s1">) {</span>
+            <span class="s1">BaseAction *log = </span><span class="s3">new </span><span class="s1">PrintActionsLog()</span><span class="s3">;</span>
+            <span class="s1">log-&gt;act(*</span><span class="s3">this</span><span class="s1">)</span><span class="s3">;</span>
+            <span class="s1">actionsLog.push_back(log)</span><span class="s3">;</span>
+
+        <span class="s1">}</span>
+
+        <span class="s3">else if </span><span class="s1">(input == </span><span class="s2">&quot;backup&quot;</span><span class="s1">) {</span>
+            <span class="s1">BaseAction *backup = </span><span class="s3">new </span><span class="s1">BackupStudio()</span><span class="s3">;</span>
+            <span class="s1">backup-&gt;act(*</span><span class="s3">this</span><span class="s1">)</span><span class="s3">;</span>
+            <span class="s1">actionsLog.push_back(backup)</span><span class="s3">;</span>
+
+        <span class="s1">}</span>
+        <span class="s3">else if </span><span class="s1">(input == </span><span class="s2">&quot;restore&quot;</span><span class="s1">) {</span>
+            <span class="s1">BaseAction *restore = </span><span class="s3">new </span><span class="s1">RestoreStudio()</span><span class="s3">;</span>
+            <span class="s1">restore-&gt;act(*</span><span class="s3">this</span><span class="s1">)</span><span class="s3">;</span>
+            <span class="s1">actionsLog.push_back(restore)</span><span class="s3">;</span>
+
+        <span class="s1">}</span>
+        <span class="s3">else</span><span class="s1">{</span>
+            <span class="s3">continue;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+    <span class="s5">//cout&lt;&lt;&quot;&quot;&lt;&lt;endl;</span>
+<span class="s1">}</span>
+
+
+
+<span class="s3">int </span><span class="s1">Studio::getNumOfTrainers() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return </span><span class="s1">trainers.size()</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s1">Trainer *Studio::getTrainer(</span><span class="s3">int </span><span class="s1">tid) {</span>
+    <span class="s3">if</span><span class="s1">((tid &lt; </span><span class="s4">0</span><span class="s1">) || (size_t(tid) &gt; trainers.size()))</span>
+        <span class="s3">return nullptr;</span>
+    <span class="s3">return </span><span class="s1">trainers[tid]</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s3">const </span><span class="s1">std::vector&lt;BaseAction *&gt; &amp;Studio::getActionsLog() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return </span><span class="s1">actionsLog</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s1">std::vector&lt;Workout&gt; &amp;Studio::getWorkoutOptions() {</span>
+    <span class="s3">return </span><span class="s1">workout_options</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s1">std::vector&lt;Trainer *&gt; Studio::getTrainersList() {</span>
+    <span class="s3">return </span><span class="s1">trainers</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s1">Studio::~Studio() { </span><span class="s5">//destractor</span>
+    <span class="s1">clean()</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s1">Studio::Studio(</span><span class="s3">const </span><span class="s1">Studio &amp;other): open(other.open)</span><span class="s3">,</span><span class="s1">trainers()</span><span class="s3">,</span><span class="s1">workout_options()</span><span class="s3">,</span><span class="s1">actionsLog() { </span><span class="s5">//copy constructor</span>
+    <span class="s1">deepcopy(other)</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+
+<span class="s1">Studio::Studio(Studio &amp;&amp;other) : open(other.open)</span><span class="s3">,</span><span class="s1">trainers(other.trainers)</span><span class="s3">,</span><span class="s1">workout_options(other.workout_options)</span><span class="s3">,</span><span class="s1">actionsLog(other.actionsLog)  { </span><span class="s5">//move constructor</span>
+    <span class="s1">other.actionsLog.clear()</span><span class="s3">;</span>
+    <span class="s1">other.trainers.clear()</span><span class="s3">;</span>
+    <span class="s1">other.workout_options.clear()</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+
+<span class="s1">Studio &amp;Studio::</span><span class="s3">operator</span><span class="s1">=(</span><span class="s3">const </span><span class="s1">Studio &amp;other) {</span><span class="s5">//copy assignment operator</span>
+    <span class="s3">if</span><span class="s1">(</span><span class="s3">this</span><span class="s1">!=&amp;other){</span>
+        <span class="s1">clean()</span><span class="s3">;</span>
+        <span class="s1">deepcopy(other)</span><span class="s3">;</span>
+    <span class="s1">}</span>
+    <span class="s3">return </span><span class="s1">(*</span><span class="s3">this</span><span class="s1">)</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s1">Studio &amp;Studio::</span><span class="s3">operator</span><span class="s1">=(Studio &amp;&amp;other) { </span><span class="s5">//move assignment operator</span>
+    <span class="s3">if</span><span class="s1">(</span><span class="s3">this</span><span class="s1">!= &amp;other){</span>
+        <span class="s1">clean()</span><span class="s3">;</span>
+        <span class="s1">deepcopy(other)</span><span class="s3">;</span>
+        <span class="s3">this</span><span class="s1">-&gt;open=other.open</span><span class="s3">;</span>
+        <span class="s1">other.actionsLog.clear()</span><span class="s3">;</span>
+        <span class="s1">other.trainers.clear()</span><span class="s3">;</span>
+        <span class="s1">other.workout_options.clear()</span><span class="s3">;</span>
+    <span class="s1">}</span>
+    <span class="s3">return </span><span class="s1">(*</span><span class="s3">this</span><span class="s1">)</span><span class="s3">;</span>
+
+<span class="s1">}</span>
+
+<span class="s3">void </span><span class="s1">Studio::clean() {</span>
+    <span class="s3">for</span><span class="s1">(Trainer* trainer : trainers){</span>
+        <span class="s3">delete </span><span class="s1">trainer</span><span class="s3">;</span>
+    <span class="s1">}</span>
+    <span class="s3">for</span><span class="s1">(BaseAction* baseaction : actionsLog){</span>
+        <span class="s3">delete </span><span class="s1">baseaction</span><span class="s3">;</span>
+    <span class="s1">}</span>
+    <span class="s1">trainers.clear()</span><span class="s3">;</span>
+    <span class="s1">actionsLog.clear()</span><span class="s3">;</span>
+    <span class="s1">workout_options.clear()</span><span class="s3">;</span>
+
+<span class="s1">}</span>
+
+<span class="s3">void </span><span class="s1">Studio::deepcopy(</span><span class="s3">const </span><span class="s1">Studio &amp;other) {</span>
+    <span class="s3">for</span><span class="s1">(Trainer* trainer : other.trainers){</span>
+        <span class="s1">trainers.push_back(trainer-&gt;clone())</span><span class="s3">;</span>
+        <span class="s5">//trainer = nullptr;</span>
+    <span class="s1">}</span>
+    <span class="s3">for</span><span class="s1">(BaseAction* baseaction : other.actionsLog){</span>
+        <span class="s1">actionsLog.push_back(baseaction-&gt;clone())</span><span class="s3">;</span>
+    <span class="s1">}</span>
+    <span class="s3">for</span><span class="s1">(Workout workout : other.workout_options){</span>
+        <span class="s1">workout_options.push_back(workout)</span><span class="s3">;</span>
+    <span class="s1">}</span>
+
+<span class="s1">}</span></pre>
+</body>
+</html>

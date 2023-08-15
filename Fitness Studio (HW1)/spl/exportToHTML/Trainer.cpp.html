@@ -1,0 +1,183 @@
+<html>
+<head>
+<title>Trainer.cpp</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #bbb529;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6a8759;}
+.s3 { color: #cc7832;}
+.s4 { color: #6897bb;}
+.s5 { color: #808080;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+Trainer.cpp</font>
+</center></td></tr></table>
+<pre><span class="s0">#include </span><span class="s2">&quot;../include/Trainer.h&quot;</span>
+<span class="s0">#include </span><span class="s2">&lt;algorithm&gt;</span>
+<span class="s0">#include </span><span class="s2">&lt;iostream&gt;</span>
+
+<span class="s1">Trainer::Trainer(</span><span class="s3">int </span><span class="s1">t_capacity):salary(</span><span class="s4">0</span><span class="s1">)</span><span class="s3">, </span><span class="s1">capacity(t_capacity)</span><span class="s3">,</span><span class="s1">open(</span><span class="s3">false</span><span class="s1">)</span><span class="s3">,</span><span class="s1">customersList()</span><span class="s3">,</span><span class="s1">orderList(){</span>
+<span class="s1">}</span>
+
+
+<span class="s3">int </span><span class="s1">Trainer::getCapacity() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return </span><span class="s1">capacity</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+
+<span class="s3">void </span><span class="s1">Trainer::addCustomer(Customer *customer) {</span>
+    <span class="s1">size_t t =capacity</span><span class="s3">;</span>
+    <span class="s3">if</span><span class="s1">(customersList.size() &lt; t) {</span>
+        <span class="s1">customersList.push_back(customer)</span><span class="s3">;</span>
+    <span class="s1">}</span>
+<span class="s1">}</span>
+
+<span class="s3">void </span><span class="s1">Trainer::updateSalary(</span><span class="s3">int </span><span class="s1">sal) {</span>
+    <span class="s1">salary = sal</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s3">void </span><span class="s1">Trainer::removeCustomer(</span><span class="s3">int </span><span class="s1">id) {</span>
+    <span class="s1">std::vector&lt;OrderPair&gt; tempo_orders</span><span class="s3">;</span>
+    <span class="s1">std::vector&lt;Customer*&gt; tempo_customers</span><span class="s3">;</span>
+<span class="s5">// mne6le3 el pointer taba3 el customer men el orderList done</span>
+    <span class="s3">for</span><span class="s1">(size_t i = </span><span class="s4">0</span><span class="s3">; </span><span class="s1">i &lt; customersList.size()</span><span class="s3">; </span><span class="s1">i++){</span>
+        <span class="s3">if</span><span class="s1">(customersList[i]-&gt;getId() == id){</span>
+            <span class="s5">//delete customersList[i];</span>
+            <span class="s1">customersList.erase(customersList.begin() + i)</span><span class="s3">;</span>
+        <span class="s1">}</span>
+
+
+        <span class="s3">if</span><span class="s1">(customersList[i]-&gt;getId() != id)</span>
+            <span class="s1">tempo_customers.push_back(customersList[i])</span><span class="s3">;</span>
+    <span class="s1">}</span>
+
+    <span class="s1">customersList.clear()</span><span class="s3">;</span>
+
+
+    <span class="s3">for</span><span class="s1">(size_t i = </span><span class="s4">0</span><span class="s3">; </span><span class="s1">i &lt; orderList.size()</span><span class="s3">; </span><span class="s1">i++){</span>
+        <span class="s3">if</span><span class="s1">(orderList[i].first != id)</span>
+            <span class="s1">tempo_orders.push_back(orderList[i])</span><span class="s3">;</span>
+    <span class="s1">}</span>
+
+    <span class="s1">updateOrderList(tempo_orders)</span><span class="s3">;</span>
+
+    <span class="s3">for</span><span class="s1">(size_t i = </span><span class="s4">0</span><span class="s3">; </span><span class="s1">i &lt; tempo_customers.size()</span><span class="s3">; </span><span class="s1">i++)</span>
+        <span class="s1">customersList.push_back(tempo_customers[i])</span><span class="s3">;</span>
+
+<span class="s1">}</span>
+
+<span class="s1">Customer *Trainer::getCustomer(</span><span class="s3">int </span><span class="s1">id) {</span>
+    <span class="s3">for</span><span class="s1">(size_t i = </span><span class="s4">0</span><span class="s3">; </span><span class="s1">i &lt; customersList.size()</span><span class="s3">; </span><span class="s1">i++) {</span>
+        <span class="s3">if </span><span class="s1">(customersList[i]-&gt;getId() == id)</span>
+            <span class="s3">return </span><span class="s1">customersList[i]</span><span class="s3">;</span>
+    <span class="s1">}</span>
+    <span class="s3">return nullptr;</span>
+<span class="s1">}</span>
+
+<span class="s1">std::vector&lt;Customer *&gt; &amp;Trainer::getCustomers() {</span>
+    <span class="s3">return </span><span class="s1">customersList</span><span class="s3">;</span>
+<span class="s1">}</span>
+<span class="s1">std::vector&lt;OrderPair&gt; &amp;Trainer::getOrders() {</span>
+    <span class="s3">return </span><span class="s1">orderList</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s3">void</span>
+<span class="s1">Trainer::order(</span><span class="s3">const int </span><span class="s1">customer_id</span><span class="s3">, const </span><span class="s1">std::vector&lt;</span><span class="s3">int</span><span class="s1">&gt; workout_ids</span><span class="s3">, const </span><span class="s1">std::vector&lt;Workout&gt; &amp;workout_options) {</span>
+    <span class="s3">if</span><span class="s1">(!getCustomer(customer_id)-&gt;getStatused()) { </span><span class="s5">// 3ashan mne3malesh shekhpoul</span>
+        <span class="s3">for </span><span class="s1">(size_t i = </span><span class="s4">0</span><span class="s3">; </span><span class="s1">i &lt; workout_ids.size()</span><span class="s3">; </span><span class="s1">i++) {</span>
+            <span class="s1">orderList.push_back(std::make_pair(customer_id</span><span class="s3">, </span><span class="s1">workout_options[workout_ids[i]]))</span><span class="s3">; </span><span class="s5">// &lt;customer_id, Workout&gt;</span>
+            <span class="s1">salary = salary + workout_options[workout_ids[i]].getPrice()</span><span class="s3">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+    <span class="s1">getCustomer(customer_id)-&gt;updateStatused(</span><span class="s3">true</span><span class="s1">)</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s3">void </span><span class="s1">Trainer::openTrainer() { </span><span class="s5">//check</span>
+    <span class="s1">open =</span><span class="s3">true;</span>
+<span class="s1">}</span>
+
+<span class="s3">void </span><span class="s1">Trainer::closeTrainer() {</span><span class="s5">//check</span>
+    <span class="s3">for</span><span class="s1">(size_t i =</span><span class="s4">0</span><span class="s3">; </span><span class="s1">i &lt; customersList.size()</span><span class="s3">; </span><span class="s1">i++)</span>
+        <span class="s3">delete </span><span class="s1">customersList[i]</span><span class="s3">;</span>
+    <span class="s1">customersList.clear()</span><span class="s3">;</span>
+    <span class="s1">orderList.clear()</span><span class="s3">;</span>
+    <span class="s1">open = </span><span class="s3">false;</span>
+<span class="s1">}</span>
+<span class="s3">void </span><span class="s1">Trainer::updateOrderList(std::vector&lt;OrderPair&gt;&amp; list) {</span>
+    <span class="s1">orderList.clear()</span><span class="s3">;</span>
+    <span class="s3">for</span><span class="s1">(OrderPair pair: list){</span>
+        <span class="s1">orderList.push_back(pair)</span><span class="s3">;</span>
+    <span class="s1">}</span>
+<span class="s1">}</span>
+
+<span class="s3">int </span><span class="s1">Trainer::getSalary() {</span>
+    <span class="s3">return </span><span class="s1">salary</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s3">bool </span><span class="s1">Trainer::isOpen() {</span>
+    <span class="s3">return </span><span class="s1">open</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+
+<span class="s1">Trainer::~Trainer() {</span><span class="s5">//des</span>
+    <span class="s1">clean()</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s1">Trainer::Trainer(</span><span class="s3">const </span><span class="s1">Trainer &amp;other) :salary(other.salary)</span><span class="s3">,</span><span class="s1">capacity(other.capacity)</span><span class="s3">,</span><span class="s1">open(other.open)</span><span class="s3">,</span><span class="s1">customersList()</span><span class="s3">,</span><span class="s1">orderList() {</span><span class="s5">//copy constructor</span>
+    <span class="s1">deepcopy(other)</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s1">Trainer::Trainer(Trainer &amp;&amp;other):salary(other.salary)</span><span class="s3">,</span><span class="s1">capacity(other.capacity)</span><span class="s3">,</span><span class="s1">open(other.open)</span><span class="s3">,</span><span class="s1">customersList(other.customersList)</span><span class="s3">,</span><span class="s1">orderList(other.orderList) { </span><span class="s5">// move constructor</span>
+    <span class="s1">other.customersList.clear()</span><span class="s3">;</span>
+    <span class="s1">other.orderList.clear()</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s1">Trainer &amp;Trainer::</span><span class="s3">operator</span><span class="s1">=(</span><span class="s3">const </span><span class="s1">Trainer &amp;other) {</span><span class="s5">//copy ass opertaor</span>
+    <span class="s3">if</span><span class="s1">(</span><span class="s3">this</span><span class="s1">!=&amp;other){</span>
+        <span class="s1">clean()</span><span class="s3">;</span>
+        <span class="s1">deepcopy(other)</span><span class="s3">;</span>
+    <span class="s1">}</span>
+    <span class="s3">return </span><span class="s1">(*</span><span class="s3">this</span><span class="s1">)</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s1">Trainer &amp;Trainer::</span><span class="s3">operator</span><span class="s1">=(Trainer &amp;&amp;other) { </span><span class="s5">//move assignment operator</span>
+    <span class="s3">if</span><span class="s1">(</span><span class="s3">this</span><span class="s1">!= &amp;other){</span>
+        <span class="s1">clean()</span><span class="s3">;</span>
+        <span class="s1">deepcopy(other)</span><span class="s3">;</span>
+        <span class="s3">this</span><span class="s1">-&gt;salary =other.salary</span><span class="s3">;</span>
+        <span class="s3">this</span><span class="s1">-&gt;open=other.open</span><span class="s3">;</span>
+        <span class="s3">this</span><span class="s1">-&gt;capacity = other.capacity</span><span class="s3">;</span>
+        <span class="s1">other.customersList.clear()</span><span class="s3">; </span><span class="s5">// leak memory?</span>
+        <span class="s1">other.orderList.clear()</span><span class="s3">; </span><span class="s5">// leak memory?</span>
+    <span class="s1">}</span>
+    <span class="s3">return </span><span class="s1">(*</span><span class="s3">this</span><span class="s1">)</span><span class="s3">;</span>
+
+<span class="s1">}</span>
+
+<span class="s1">Trainer *Trainer::clone() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return new </span><span class="s1">Trainer(*</span><span class="s3">this</span><span class="s1">)</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s3">void </span><span class="s1">Trainer::clean() {</span>
+    <span class="s3">for</span><span class="s1">(Customer* customer : customersList){</span>
+        <span class="s3">delete </span><span class="s1">customer</span><span class="s3">;</span>
+    <span class="s1">}</span>
+    <span class="s1">customersList.clear()</span><span class="s3">;</span>
+    <span class="s1">orderList.clear()</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s3">void </span><span class="s1">Trainer::deepcopy(</span><span class="s3">const </span><span class="s1">Trainer &amp;other) {</span>
+    <span class="s3">for</span><span class="s1">(Customer* customer : other.customersList){</span>
+        <span class="s1">customersList.push_back(customer-&gt;clone())</span><span class="s3">;</span>
+    <span class="s1">}</span>
+    <span class="s3">for</span><span class="s1">(OrderPair pair: other.orderList){</span>
+        <span class="s1">orderList.push_back(pair)</span><span class="s3">;</span>
+    <span class="s1">}</span>
+<span class="s1">}</span></pre>
+</body>
+</html>

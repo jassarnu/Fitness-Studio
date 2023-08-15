@@ -1,0 +1,181 @@
+<html>
+<head>
+<title>Customer.cpp</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #bbb529;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6a8759;}
+.s3 { color: #cc7832;}
+.s4 { color: #6897bb;}
+.s5 { color: #808080;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+Customer.cpp</font>
+</center></td></tr></table>
+<pre><span class="s0">#include </span><span class="s2">&quot;../include/Customer.h&quot;</span>
+<span class="s0">#include </span><span class="s2">&quot;../include/Studio.h&quot;</span>
+<span class="s0">#include </span><span class="s2">&lt;iostream&gt;</span>
+<span class="s0">#include </span><span class="s2">&lt;algorithm&gt;</span>
+<span class="s0">#include </span><span class="s2">&lt;vector&gt;</span>
+
+<span class="s1">Customer::~Customer() =</span><span class="s3">default ;</span>
+<span class="s1">Customer::Customer(std::string c_name</span><span class="s3">, int </span><span class="s1">c_id) :statused(</span><span class="s3">false</span><span class="s1">)</span><span class="s3">, </span><span class="s1">workouts()</span><span class="s3">,</span><span class="s1">name(c_name)</span><span class="s3">, </span><span class="s1">id(c_id) {</span>
+<span class="s1">}</span>
+
+
+<span class="s1">std::string Customer::getName() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return </span><span class="s1">name</span><span class="s3">;</span>
+<span class="s1">}</span>
+<span class="s3">int </span><span class="s1">Customer::getId() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return </span><span class="s1">id</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s3">bool </span><span class="s1">Customer::getStatused() {</span>
+    <span class="s3">return </span><span class="s1">statused</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s3">void </span><span class="s1">Customer::updateStatused(</span><span class="s3">bool </span><span class="s1">status) {</span>
+    <span class="s1">statused = status</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s1">SweatyCustomer::SweatyCustomer(std::string name</span><span class="s3">, int </span><span class="s1">id): Customer(name</span><span class="s3">, </span><span class="s1">id) {</span>
+<span class="s1">}</span>
+
+
+<span class="s1">std::vector&lt;</span><span class="s3">int</span><span class="s1">&gt; SweatyCustomer::order(</span><span class="s3">const </span><span class="s1">std::vector&lt;Workout&gt; &amp;workout_options) {</span>
+    <span class="s1">std:: vector&lt;</span><span class="s3">int</span><span class="s1">&gt; workout_ids</span><span class="s3">;</span>
+    <span class="s3">for</span><span class="s1">(size_t i = </span><span class="s4">0</span><span class="s3">; </span><span class="s1">i &lt; workout_options.size() </span><span class="s3">; </span><span class="s1">i++){</span>
+        <span class="s3">if</span><span class="s1">(workout_options[i].getType() == CARDIO ){</span>
+            <span class="s1">workout_ids.push_back(workout_options[i].getId())</span><span class="s3">;</span>
+            <span class="s1">workouts.push_back(workout_options[i])</span><span class="s3">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+    <span class="s3">return </span><span class="s1">workout_ids</span><span class="s3">;</span>
+<span class="s1">}</span>
+<span class="s1">std::string SweatyCustomer::toString() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return </span><span class="s2">&quot;swt&quot;</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s1">SweatyCustomer *SweatyCustomer::clone() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return new </span><span class="s1">SweatyCustomer(*</span><span class="s3">this</span><span class="s1">)</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s1">CheapCustomer::CheapCustomer(std::string name</span><span class="s3">, int </span><span class="s1">id): Customer(name</span><span class="s3">, </span><span class="s1">id) {}</span>
+
+<span class="s3">int </span><span class="s1">Customer::getCheapestWorkout(</span><span class="s3">const </span><span class="s1">std::vector&lt;Workout&gt; &amp;workout_options) {</span>
+    <span class="s3">int </span><span class="s1">min_price_id = workout_options[</span><span class="s4">0</span><span class="s1">].getId()</span><span class="s3">;</span>
+    <span class="s3">int </span><span class="s1">min_price = workout_options[</span><span class="s4">0</span><span class="s1">].getPrice()</span><span class="s3">;</span>
+    <span class="s3">for</span><span class="s1">(size_t i = </span><span class="s4">1</span><span class="s3">; </span><span class="s1">i &lt; workout_options.size() </span><span class="s3">; </span><span class="s1">i++){</span>
+        <span class="s3">int </span><span class="s1">this_price = workout_options[i].getPrice()</span><span class="s3">;</span>
+        <span class="s3">int </span><span class="s1">this_id = workout_options[i].getId()</span><span class="s3">;</span>
+        <span class="s3">if</span><span class="s1">(min_price &gt; this_price){</span>
+            <span class="s1">min_price = this_price</span><span class="s3">;</span>
+            <span class="s1">min_price_id = this_id</span><span class="s3">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+    <span class="s3">return </span><span class="s1">min_price_id</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s1">std::vector&lt;</span><span class="s3">int</span><span class="s1">&gt; CheapCustomer::order(</span><span class="s3">const </span><span class="s1">std::vector&lt;Workout&gt; &amp;workout_options) {</span>
+    <span class="s1">std:: vector&lt;</span><span class="s3">int</span><span class="s1">&gt; workout_ids</span><span class="s3">;</span>
+    <span class="s3">int </span><span class="s1">min_price_id = getCheapestWorkout(workout_options)</span><span class="s3">;</span>
+    <span class="s1">workout_ids.push_back(min_price_id)</span><span class="s3">;</span>
+    <span class="s1">workouts.push_back(workout_options[min_price_id])</span><span class="s3">;</span>
+    <span class="s3">return </span><span class="s1">workout_ids</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s1">std::string CheapCustomer::toString() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return </span><span class="s2">&quot;chp&quot;</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s1">CheapCustomer *CheapCustomer::clone() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return new </span><span class="s1">CheapCustomer(*</span><span class="s3">this</span><span class="s1">)</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s1">HeavyMuscleCustomer::HeavyMuscleCustomer(std::string name</span><span class="s3">, int </span><span class="s1">id): Customer(name</span><span class="s3">, </span><span class="s1">id) {}</span>
+
+<span class="s1">std::vector&lt;</span><span class="s3">int</span><span class="s1">&gt; HeavyMuscleCustomer::order(</span><span class="s3">const </span><span class="s1">std::vector&lt;Workout&gt; &amp;workout_options) {</span>
+    <span class="s1">std:: vector&lt;</span><span class="s3">int</span><span class="s1">&gt; workout_ids</span><span class="s3">;</span>
+    <span class="s1">std:: vector&lt;</span><span class="s3">int</span><span class="s1">&gt; workout_prices</span><span class="s3">;</span>
+
+    <span class="s3">for</span><span class="s1">(size_t i = </span><span class="s4">0</span><span class="s3">; </span><span class="s1">i &lt; workout_options.size()</span><span class="s3">; </span><span class="s1">i++){</span>
+        <span class="s3">if</span><span class="s1">(workout_options[i].getType() == ANAEROBIC){</span>
+            <span class="s1">workout_ids.push_back(workout_options[i].getId())</span><span class="s3">;</span>
+            <span class="s1">workout_prices.push_back(workout_options[i].getPrice())</span><span class="s3">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s3">for</span><span class="s1">(size_t i = </span><span class="s4">0</span><span class="s3">; </span><span class="s1">i &lt; workout_ids.size()</span><span class="s3">; </span><span class="s1">i++)</span>
+        <span class="s3">for</span><span class="s1">(size_t j = </span><span class="s4">0</span><span class="s3">; </span><span class="s1">j &lt; workout_ids.size()</span><span class="s3">; </span><span class="s1">j++){</span>
+            <span class="s3">if</span><span class="s1">(workout_prices[j] &lt;  workout_prices[i]){</span>
+                <span class="s3">int </span><span class="s1">price = workout_prices[i]</span><span class="s3">;</span>
+                <span class="s1">workout_prices[i] = workout_prices[j]</span><span class="s3">;</span>
+                <span class="s1">workout_prices[j] = price</span><span class="s3">;</span>
+                <span class="s3">int </span><span class="s1">id = workout_ids[i]</span><span class="s3">;</span>
+                <span class="s1">workout_ids[i] = workout_ids[j]</span><span class="s3">;</span>
+                <span class="s1">workout_ids[j] = id</span><span class="s3">;</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+    <span class="s3">return </span><span class="s1">workout_ids</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s1">std::string HeavyMuscleCustomer::toString() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return </span><span class="s2">&quot;mcl&quot;</span><span class="s3">;</span>
+
+<span class="s1">}</span>
+
+<span class="s1">HeavyMuscleCustomer *HeavyMuscleCustomer::clone() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return new </span><span class="s1">HeavyMuscleCustomer(*</span><span class="s3">this</span><span class="s1">)</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s1">FullBodyCustomer::FullBodyCustomer(std::string name</span><span class="s3">, int </span><span class="s1">id):Customer(name</span><span class="s3">, </span><span class="s1">id) {}</span>
+
+
+<span class="s1">std::vector&lt;</span><span class="s3">int</span><span class="s1">&gt; FullBodyCustomer::order(</span><span class="s3">const </span><span class="s1">std::vector&lt;Workout&gt; &amp;workout_options) {</span>
+    <span class="s1">std:: vector&lt;</span><span class="s3">int</span><span class="s1">&gt; workout_ids</span><span class="s3">;</span>
+    <span class="s1">std:: vector&lt;Workout&gt; cardios</span><span class="s3">; </span><span class="s5">// vector of the cardio types.</span>
+    <span class="s1">std:: vector&lt;Workout&gt; mixed</span><span class="s3">; </span><span class="s5">// vector of the mixed types.</span>
+    <span class="s1">std:: vector&lt;Workout&gt; anaerobics</span><span class="s3">; </span><span class="s5">// vector the anaerobic types.</span>
+    <span class="s3">for</span><span class="s1">(size_t i = </span><span class="s4">0</span><span class="s3">; </span><span class="s1">i &lt; workout_options.size()</span><span class="s3">; </span><span class="s1">i++){</span>
+        <span class="s1">WorkoutType type = workout_options[i].getType()</span><span class="s3">;</span>
+        <span class="s3">if</span><span class="s1">(type == CARDIO)</span>
+            <span class="s1">cardios.push_back(workout_options[i])</span><span class="s3">;</span>
+        <span class="s3">else if</span><span class="s1">(type == MIXED)</span>
+            <span class="s1">mixed.push_back(workout_options[i])</span><span class="s3">;</span>
+        <span class="s3">else</span>
+            <span class="s1">anaerobics.push_back(workout_options[i])</span><span class="s3">;</span>
+    <span class="s1">}</span>
+    <span class="s1">workout_ids.push_back(getCheapestWorkout(cardios))</span><span class="s3">; </span><span class="s5">// first he takes the cheapest cardio.</span>
+    <span class="s1">workout_ids.push_back(mostExpExr(mixed))</span><span class="s3">; </span><span class="s5">// second, he takes the most expensive mix.</span>
+    <span class="s1">workout_ids.push_back(getCheapestWorkout(anaerobics))</span><span class="s3">; </span><span class="s5">// third, he takes the</span>
+    <span class="s3">return </span><span class="s1">workout_ids</span><span class="s3">;</span>
+
+<span class="s1">}</span>
+<span class="s1">std::string FullBodyCustomer::toString() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return </span><span class="s2">&quot;fbd&quot;</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s1">FullBodyCustomer *FullBodyCustomer::clone() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return new </span><span class="s1">FullBodyCustomer(*</span><span class="s3">this</span><span class="s1">)</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s3">int </span><span class="s1">Customer::mostExpExr(</span><span class="s3">const </span><span class="s1">std::vector&lt;Workout&gt; &amp;workout_options) { </span><span class="s5">// -----changed to static-----</span>
+    <span class="s3">int </span><span class="s1">max_price_id = workout_options[</span><span class="s4">0</span><span class="s1">].getId()</span><span class="s3">;</span>
+    <span class="s3">int </span><span class="s1">max_price = workout_options[</span><span class="s4">0</span><span class="s1">].getPrice()</span><span class="s3">;</span>
+    <span class="s3">for</span><span class="s1">(size_t i = </span><span class="s4">1</span><span class="s3">; </span><span class="s1">i &lt; workout_options.size() </span><span class="s3">; </span><span class="s1">i++){</span>
+        <span class="s3">int </span><span class="s1">this_price = workout_options[i].getPrice()</span><span class="s3">;</span>
+        <span class="s3">int </span><span class="s1">this_id = workout_options[i].getId()</span><span class="s3">;</span>
+        <span class="s3">if</span><span class="s1">(max_price &lt; this_price){</span>
+            <span class="s1">max_price = this_price</span><span class="s3">;</span>
+            <span class="s1">max_price_id = this_id</span><span class="s3">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+    <span class="s3">return </span><span class="s1">max_price_id</span><span class="s3">;</span>
+<span class="s1">}</span></pre>
+</body>
+</html>

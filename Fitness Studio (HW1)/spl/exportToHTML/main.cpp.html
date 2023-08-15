@@ -1,0 +1,44 @@
+<html>
+<head>
+<title>main.cpp</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #bbb529;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6a8759;}
+.s3 { color: #cc7832;}
+.s4 { color: #6897bb;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+main.cpp</font>
+</center></td></tr></table>
+<pre><span class="s0">#include </span><span class="s2">&quot;../include/Studio.h&quot;</span>
+<span class="s0">#include </span><span class="s2">&quot;../include/Trainer.h&quot;</span>
+<span class="s0">#include </span><span class="s2">&quot;../include/Customer.h&quot;</span>
+<span class="s0">#include </span><span class="s2">&quot;../include/Action.h&quot;</span>
+
+<span class="s0">#include </span><span class="s2">&lt;iostream&gt;</span>
+
+<span class="s3">using namespace </span><span class="s1">std</span><span class="s3">;</span>
+
+<span class="s1">Studio* backup = </span><span class="s3">nullptr;</span>
+
+<span class="s3">int </span><span class="s1">main(</span><span class="s3">int </span><span class="s1">argc</span><span class="s3">, char</span><span class="s1">** argv) {</span>
+    <span class="s3">if </span><span class="s1">(argc != </span><span class="s4">2</span><span class="s1">) {</span>
+        <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;usage: studio &lt;config_path&gt;&quot; </span><span class="s1">&lt;&lt; std::endl</span><span class="s3">;</span>
+        <span class="s3">return </span><span class="s4">0</span><span class="s3">;</span>
+    <span class="s1">}</span>
+    <span class="s1">string configurationFile = argv[</span><span class="s4">1</span><span class="s1">]</span><span class="s3">;</span>
+    <span class="s1">Studio studio(configurationFile)</span><span class="s3">;</span>
+    <span class="s1">studio.start()</span><span class="s3">;</span>
+    <span class="s3">if</span><span class="s1">(backup != </span><span class="s3">nullptr</span><span class="s1">){</span>
+        <span class="s3">delete </span><span class="s1">backup</span><span class="s3">;</span>
+        <span class="s1">backup = </span><span class="s3">nullptr;</span>
+    <span class="s1">}</span>
+<span class="s1">}</span></pre>
+</body>
+</html>

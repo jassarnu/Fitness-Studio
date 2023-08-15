@@ -1,0 +1,413 @@
+<html>
+<head>
+<title>Action.cpp</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #bbb529;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6a8759;}
+.s3 { color: #cc7832;}
+.s4 { color: #808080;}
+.s5 { color: #6897bb;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+Action.cpp</font>
+</center></td></tr></table>
+<pre><span class="s0">#include </span><span class="s2">&quot;../include/Action.h&quot;</span>
+<span class="s0">#include </span><span class="s2">&quot;../include/Trainer.h&quot;</span>
+<span class="s0">#include </span><span class="s2">&quot;../include/Studio.h&quot;</span>
+<span class="s0">#include </span><span class="s2">&lt;iostream&gt;</span>
+
+<span class="s1">BaseAction::~BaseAction() =</span><span class="s3">default;</span>
+<span class="s1">BaseAction::BaseAction() :errorMsg()</span><span class="s3">,</span><span class="s1">status(){}</span><span class="s3">;</span>
+<span class="s1">BaseAction &amp;BaseAction::</span><span class="s3">operator</span><span class="s1">=(</span><span class="s3">const </span><span class="s1">BaseAction &amp;other) =</span><span class="s3">default;</span>
+
+<span class="s3">void </span><span class="s1">BaseAction::complete() {</span>
+    <span class="s3">this</span><span class="s1">-&gt;status = COMPLETED</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s3">void </span><span class="s1">BaseAction::error(std::string errorMsg) {</span>
+    <span class="s3">this</span><span class="s1">-&gt;status = ERROR</span><span class="s3">;</span>
+    <span class="s3">this</span><span class="s1">-&gt;errorMsg = errorMsg</span><span class="s3">;</span>
+    <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;Error: &quot; </span><span class="s1">+ errorMsg &lt;&lt;std::endl</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s1">ActionStatus BaseAction::getStatus() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return </span><span class="s1">status</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s1">std::string BaseAction::getErrorMsg() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return </span><span class="s1">errorMsg</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s4">//OpenTrainer class</span>
+<span class="s1">OpenTrainer ::OpenTrainer(</span><span class="s3">int </span><span class="s1">id</span><span class="s3">, </span><span class="s1">std::vector&lt;Customer *&gt; &amp;customersList):trainerId(id)</span><span class="s3">, </span><span class="s1">customers(customersList) {</span>
+
+<span class="s1">}</span>
+
+<span class="s3">void </span><span class="s1">OpenTrainer::act(Studio &amp;studio) {</span>
+    <span class="s1">Trainer *tr =studio.getTrainer(trainerId)</span><span class="s3">;</span>
+    <span class="s4">//std::cout &lt;&lt; &quot;trainer is &quot; &lt;&lt; tr-&gt;getSalary();</span>
+    <span class="s3">if</span><span class="s1">(tr == </span><span class="s3">nullptr </span><span class="s1">|| tr-&gt;isOpen()){</span>
+        <span class="s1">error(</span><span class="s2">&quot;trainer does not exist or is already open&quot;</span><span class="s1">)</span><span class="s3">;</span>
+    <span class="s1">}</span>
+    <span class="s3">else</span><span class="s1">{</span>
+        <span class="s1">tr-&gt;openTrainer()</span><span class="s3">;</span>
+        <span class="s1">size_t trcap =tr-&gt;getCapacity()</span><span class="s3">;</span>
+        <span class="s3">for</span><span class="s1">(size_t i =</span><span class="s5">0 </span><span class="s3">;</span><span class="s1">(i &lt; customers.size()) &amp; (trcap &gt; tr-&gt;getCustomers().size())</span><span class="s3">;</span><span class="s1">i++){</span>
+            <span class="s1">tr-&gt;addCustomer(customers[i])</span><span class="s3">;</span><span class="s1">}</span>
+        <span class="s1">complete()</span><span class="s3">;</span>
+    <span class="s1">}</span>
+<span class="s1">}</span>
+
+
+<span class="s1">std::string OpenTrainer::toString() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s1">std ::string str = </span><span class="s2">&quot;open &quot; </span><span class="s1">+ std::to_string(trainerId) + </span><span class="s2">&quot; &quot;</span><span class="s3">;</span>
+    <span class="s3">for</span><span class="s1">(size_t i =</span><span class="s5">0 </span><span class="s3">; </span><span class="s1">i&lt;customers.size()</span><span class="s3">;</span><span class="s1">i=+</span><span class="s5">1</span><span class="s1">){</span>
+        <span class="s1">str = str + customers[i]-&gt;getName()+</span><span class="s2">&quot;,&quot;</span><span class="s1">+customers[i]-&gt;toString()</span><span class="s3">;</span>
+    <span class="s1">}</span>
+    <span class="s3">return </span><span class="s1">str</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s1">BaseAction *OpenTrainer::clone() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return new </span><span class="s1">OpenTrainer(*</span><span class="s3">this</span><span class="s1">)</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s1">std::string OpenTrainer::getErrortoString() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return </span><span class="s1">getErrorMsg()</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+
+<span class="s4">//order class</span>
+<span class="s1">Order::Order(</span><span class="s3">int </span><span class="s1">id) : trainerId(id){</span>
+<span class="s1">}</span><span class="s3">;</span>
+
+<span class="s3">void </span><span class="s1">Order::act(Studio &amp;studio) {</span>
+    <span class="s4">// el order pair lal trainer meshtakhpel</span>
+    <span class="s1">Trainer *tr = studio.getTrainer(trainerId)</span><span class="s3">;</span>
+    <span class="s3">if</span><span class="s1">(tr == </span><span class="s3">nullptr </span><span class="s1">|| !tr-&gt;isOpen()) {</span>
+        <span class="s1">error(</span><span class="s2">&quot;session is closed IDK WHAT&quot;</span><span class="s1">)</span><span class="s3">;</span>
+    <span class="s1">}</span>
+    <span class="s3">else</span><span class="s1">{</span>
+        <span class="s1">std::vector&lt;Workout&gt; &amp;workoutopt = studio.getWorkoutOptions()</span><span class="s3">;</span>
+        <span class="s1">std::vector&lt;Customer *&gt; customers = tr-&gt;getCustomers()</span><span class="s3">;</span>
+        <span class="s3">for </span><span class="s1">(size_t i = </span><span class="s5">0</span><span class="s3">; </span><span class="s1">i &lt; customers.size()</span><span class="s3">; </span><span class="s1">i++) {</span>
+            <span class="s1">Customer *cust = customers[i]</span><span class="s3">;</span>
+            <span class="s1">std::vector&lt;</span><span class="s3">int</span><span class="s1">&gt; workoutids = cust-&gt;order(workoutopt)</span><span class="s3">;</span>
+            <span class="s1">tr-&gt;order(cust-&gt;getId()</span><span class="s3">, </span><span class="s1">workoutids</span><span class="s3">, </span><span class="s1">workoutopt)</span><span class="s3">;</span>
+        <span class="s1">}</span>
+
+        <span class="s1">std::string outp = </span><span class="s2">&quot;&quot;</span><span class="s3">;</span>
+            <span class="s3">for </span><span class="s1">(size_t i = </span><span class="s5">0</span><span class="s3">; </span><span class="s1">i &lt; customers.size()</span><span class="s3">; </span><span class="s1">i++) {</span>
+                <span class="s1">std::vector&lt;</span><span class="s3">int</span><span class="s1">&gt; workoutids = customers[i]-&gt;order(workoutopt)</span><span class="s3">;</span>
+                <span class="s3">for </span><span class="s1">(size_t j = </span><span class="s5">0</span><span class="s3">; </span><span class="s1">j &lt; workoutids.size()</span><span class="s3">; </span><span class="s1">j++) {</span>
+                    <span class="s1">outp = outp + customers[i]-&gt;getName() + </span><span class="s2">&quot; Is Doing &quot; </span><span class="s1">+ workoutopt[workoutids[j]].getName()</span><span class="s3">;</span>
+                    <span class="s3">if </span><span class="s1">((j &lt; workoutids.size()-</span><span class="s5">1 </span><span class="s1">) || (i &lt; customers.size()-</span><span class="s5">1</span><span class="s1">))</span>
+                        <span class="s1">outp = outp + </span><span class="s2">&quot;</span><span class="s3">\n</span><span class="s2">&quot;</span><span class="s3">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+
+
+        <span class="s1">std::cout &lt;&lt; outp &lt;&lt; std::endl</span><span class="s3">;</span>
+        <span class="s1">complete()</span><span class="s3">;</span>
+
+    <span class="s1">}</span>
+<span class="s1">}</span>
+
+<span class="s1">BaseAction *Order::clone() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return new </span><span class="s1">Order(*</span><span class="s3">this</span><span class="s1">)</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s1">std::string Order::getErrortoString() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return </span><span class="s1">getErrorMsg()</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+
+<span class="s1">std::string Order::toString() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s1">std::string str =</span><span class="s2">&quot;order &quot;</span><span class="s3">;</span>
+    <span class="s3">return </span><span class="s1">str + std::to_string(trainerId)</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+
+<span class="s4">//movecustomer</span>
+<span class="s1">MoveCustomer::MoveCustomer(</span><span class="s3">int </span><span class="s1">src</span><span class="s3">, int </span><span class="s1">dst</span><span class="s3">, int </span><span class="s1">customerId) :srcTrainer(src)</span><span class="s3">,</span><span class="s1">dstTrainer(dst)</span><span class="s3">,</span><span class="s1">id(customerId){}</span><span class="s3">;</span>
+
+<span class="s3">void </span><span class="s1">MoveCustomer::act(Studio &amp;studio) {</span>
+    <span class="s1">Trainer *trainerSrc = studio.getTrainer(srcTrainer)</span><span class="s3">;</span>
+    <span class="s1">Trainer *trainerDst = studio.getTrainer(dstTrainer)</span><span class="s3">;</span>
+    <span class="s3">if </span><span class="s1">(trainerSrc == </span><span class="s3">nullptr </span><span class="s1">|| trainerSrc-&gt;getCustomer(id) == </span><span class="s3">nullptr</span><span class="s1">|| trainerDst == </span><span class="s3">nullptr </span><span class="s1">|| (!trainerSrc-&gt;isOpen()) || (!trainerDst-&gt;isOpen())) {</span>
+        <span class="s1">error(</span><span class="s2">&quot;cannot move customer&quot;</span><span class="s1">)</span><span class="s3">;</span>
+    <span class="s1">}</span>
+    <span class="s3">else if </span><span class="s1">((trainerSrc-&gt;getCustomer(id) == </span><span class="s3">nullptr </span><span class="s1">|| (size_t)trainerDst-&gt;getCapacity() == trainerDst-&gt;getCustomers().size())) {</span>
+        <span class="s1">error(</span><span class="s2">&quot;cannot move customer&quot;</span><span class="s1">)</span><span class="s3">;</span>
+    <span class="s1">}</span>
+    <span class="s3">else </span><span class="s1">{</span>
+        <span class="s3">int </span><span class="s1">salaryDst = trainerDst-&gt;getSalary()</span><span class="s3">;</span>
+        <span class="s3">int </span><span class="s1">salarySrc = trainerSrc-&gt;getSalary()</span><span class="s3">;</span>
+        <span class="s1">Customer *customer = trainerSrc-&gt;getCustomer(id)</span><span class="s3">;</span>
+        <span class="s1">std::vector&lt;OrderPair&gt;&amp; orderCustomerSrc = trainerSrc-&gt;getOrders()</span><span class="s3">;</span>
+        <span class="s1">std::vector&lt;OrderPair&gt; newOrderPairs</span><span class="s3">;</span>
+        <span class="s1">Customer *cpy = customer-&gt;clone()</span><span class="s3">;</span>
+        <span class="s1">std::vector&lt;</span><span class="s3">int</span><span class="s1">&gt; workout_ids</span><span class="s3">;</span>
+        <span class="s3">for </span><span class="s1">(size_t i = </span><span class="s5">0</span><span class="s3">; </span><span class="s1">i &lt; orderCustomerSrc.size()</span><span class="s3">; </span><span class="s1">i++) {</span>
+            <span class="s3">if </span><span class="s1">(orderCustomerSrc[i].first == id) {</span>
+                <span class="s1">workout_ids.push_back(orderCustomerSrc[i].second.getId())</span><span class="s3">;</span>
+                <span class="s1">salarySrc  -= orderCustomerSrc[i].second.getPrice()</span><span class="s3">;</span>
+                <span class="s4">//salaryDst += orderCustomerSrc[i].second.getPrice();</span>
+            <span class="s1">}</span>
+            <span class="s3">else</span>
+                <span class="s1">newOrderPairs.push_back(orderCustomerSrc[i])</span><span class="s3">;</span>
+        <span class="s1">}</span>
+        <span class="s1">cpy-&gt;updateStatused(</span><span class="s3">false</span><span class="s1">)</span><span class="s3">;</span>
+        <span class="s1">trainerDst-&gt;addCustomer(cpy)</span><span class="s3">;</span>
+        <span class="s1">trainerSrc-&gt;updateOrderList(newOrderPairs)</span><span class="s3">;</span>
+        <span class="s1">trainerSrc-&gt;removeCustomer(id)</span><span class="s3">;</span>
+        <span class="s1">trainerDst-&gt;updateSalary(salaryDst)</span><span class="s3">;</span>
+        <span class="s1">trainerSrc-&gt;updateSalary(salarySrc)</span><span class="s3">;</span>
+
+        <span class="s1">trainerDst-&gt;order(customer-&gt;getId()</span><span class="s3">, </span><span class="s1">workout_ids</span><span class="s3">, </span><span class="s1">studio.getWorkoutOptions())</span><span class="s3">;</span>
+        <span class="s3">if </span><span class="s1">(trainerSrc-&gt;getCustomers().size() == </span><span class="s5">0</span><span class="s1">) {</span><span class="s4">// end of the session.</span>
+            <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;Trainer &quot; </span><span class="s1">+ std::to_string(srcTrainer) + </span><span class="s2">&quot; closed. Salary &quot; </span><span class="s1">+</span>
+                         <span class="s1">std::to_string(trainerSrc-&gt;getSalary()) + </span><span class="s2">&quot;NIS</span><span class="s3">\n</span><span class="s2">&quot;</span><span class="s3">;</span>
+            <span class="s1">trainerSrc-&gt;closeTrainer()</span><span class="s3">;</span>
+        <span class="s1">}</span>
+
+        <span class="s1">complete()</span><span class="s3">;</span>
+    <span class="s1">}</span>
+
+<span class="s1">}</span>
+
+<span class="s1">BaseAction *MoveCustomer::clone() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return new </span><span class="s1">MoveCustomer(*</span><span class="s3">this</span><span class="s1">)</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s1">std::string MoveCustomer::getErrortoString() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return </span><span class="s1">getErrorMsg()</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+
+
+<span class="s1">std::string MoveCustomer::toString() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s1">std::string str =</span><span class="s2">&quot;move &quot;</span><span class="s3">;</span>
+    <span class="s3">return </span><span class="s1">str + std::to_string(srcTrainer) + </span><span class="s2">&quot; &quot; </span><span class="s1">+std::to_string(dstTrainer) + </span><span class="s2">&quot; &quot;</span><span class="s1">+ std::to_string(id)</span><span class="s3">;</span>
+<span class="s1">}</span><span class="s3">;</span>
+
+
+<span class="s4">//close class</span>
+<span class="s1">Close::Close(</span><span class="s3">int </span><span class="s1">id) :trainerId(id){}</span><span class="s3">;</span>
+<span class="s3">void </span><span class="s1">Close::act(Studio &amp;studio) {</span>
+    <span class="s1">Trainer *tr =studio.getTrainer(trainerId)</span><span class="s3">;</span>
+    <span class="s1">std::string str = </span><span class="s2">&quot;Trainer &quot; </span><span class="s1">+ std::to_string(trainerId) + </span><span class="s2">&quot; &quot; </span><span class="s1">+</span><span class="s2">&quot;closed. &quot;</span><span class="s1">+</span><span class="s2">&quot;Salary&quot; </span><span class="s1">+</span><span class="s2">&quot; &quot;</span><span class="s3">; ;</span>
+    <span class="s3">if</span><span class="s1">(tr == </span><span class="s3">nullptr</span><span class="s1">||!tr-&gt;isOpen())</span>
+        <span class="s1">error(</span><span class="s2">&quot;Trainer does not exist or is not open&quot;</span><span class="s1">)</span><span class="s3">;</span>
+    <span class="s3">else</span><span class="s1">{</span>
+        <span class="s1">std::cout &lt;&lt; str + std::to_string(tr-&gt;getSalary()) + </span><span class="s2">&quot;NIS</span><span class="s3">\n</span><span class="s2">&quot;</span><span class="s3">;</span>
+        <span class="s1">tr-&gt;closeTrainer()</span><span class="s3">;</span>
+        <span class="s1">complete()</span><span class="s3">;</span>
+    <span class="s1">}</span>
+<span class="s1">}</span>
+
+<span class="s1">std::string Close::toString() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s1">std::string str =</span><span class="s2">&quot;close &quot; </span><span class="s1">+std::to_string(trainerId)</span><span class="s3">;</span>
+    <span class="s3">return </span><span class="s1">str</span><span class="s3">;</span>
+
+<span class="s1">}</span>
+
+<span class="s1">BaseAction *Close::clone() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return new </span><span class="s1">Close(*</span><span class="s3">this</span><span class="s1">)</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s1">std::string Close::getErrortoString() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return </span><span class="s1">getErrorMsg()</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+
+
+<span class="s4">//close all class</span>
+<span class="s1">CloseAll::CloseAll() {}</span><span class="s3">;</span>
+
+<span class="s3">void </span><span class="s1">CloseAll::act(Studio &amp;studio) {</span>
+<span class="s4">//    std::cout &lt;&lt; &quot;trying to close....&quot; &lt;&lt; std::endl;</span>
+    <span class="s1">std::vector&lt;Trainer*&gt; trainersList = studio.getTrainersList()</span><span class="s3">;</span>
+<span class="s4">//    std::cout &lt;&lt; &quot;trying to close.... trainers size is &quot; &lt;&lt; std::to_string(trainersList.size()) &lt;&lt; std::endl;</span>
+    <span class="s3">for</span><span class="s1">(size_t i = </span><span class="s5">0 </span><span class="s3">; </span><span class="s1">i &lt; trainersList.size() </span><span class="s3">;</span><span class="s1">i++){</span>
+<span class="s4">//        std::cout &lt;&lt; &quot;i'm in the for.... i = &quot; &lt;&lt; std::to_string(i) &lt;&lt; std::endl;</span>
+        <span class="s3">if</span><span class="s1">(trainersList[i]-&gt;isOpen())</span>
+            <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;Trainer &quot; </span><span class="s1">+ std::to_string(i) + </span><span class="s2">&quot; closed. Salary &quot; </span><span class="s1">+ std::to_string(trainersList[i]-&gt;getSalary()) + </span><span class="s2">&quot;NIS</span><span class="s3">\n</span><span class="s2">&quot;</span><span class="s3">;</span>
+        <span class="s1">trainersList[i]-&gt;closeTrainer()</span><span class="s3">;</span>
+       <span class="s4">// delete trainersList[i]; // ------------------------leak memory or WHAT?-----------------------</span>
+    <span class="s1">}</span>
+    <span class="s1">complete()</span><span class="s3">;</span>
+    <span class="s1">trainersList.clear()</span><span class="s3">;</span><span class="s4">// cleared in studio.?</span>
+<span class="s1">}</span>
+
+<span class="s1">std::string CloseAll::toString() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s1">std::string str =</span><span class="s2">&quot;closeall&quot;</span><span class="s3">;</span>
+    <span class="s3">return </span><span class="s1">str</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s1">std::string CloseAll::getErrortoString() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return </span><span class="s1">getErrorMsg()</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s1">BaseAction *CloseAll::clone() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return new </span><span class="s1">CloseAll(*</span><span class="s3">this</span><span class="s1">)</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+
+
+<span class="s4">//PrintWorkotoption</span>
+<span class="s1">PrintWorkoutOptions::PrintWorkoutOptions() {</span>
+<span class="s1">}</span><span class="s3">;</span>
+
+<span class="s3">void </span><span class="s1">PrintWorkoutOptions::act(Studio &amp;studio) {</span>
+    <span class="s1">std::string str = </span><span class="s2">&quot;&quot;</span><span class="s3">;</span>
+    <span class="s1">std::vector&lt;Workout&gt; works = studio.getWorkoutOptions()</span><span class="s3">;</span>
+    <span class="s3">for</span><span class="s1">(size_t i = </span><span class="s5">0</span><span class="s3">; </span><span class="s1">i &lt; works.size()</span><span class="s3">; </span><span class="s1">i++){</span>
+        <span class="s1">Workout work = works[i]</span><span class="s3">;</span>
+        <span class="s1">str+= work.getName() + </span><span class="s2">&quot;, &quot; </span><span class="s1">+ std::to_string(work.getType()) +</span><span class="s2">&quot;, &quot; </span><span class="s1">+ std::to_string(work.getPrice())</span><span class="s3">;</span>
+        <span class="s4">//if(i != works.size())</span>
+        <span class="s1">str+= </span><span class="s2">&quot;</span><span class="s3">\n</span><span class="s2">&quot;</span><span class="s3">;</span>
+    <span class="s1">}</span>
+    <span class="s1">complete()</span><span class="s3">;</span>
+    <span class="s1">std::cout &lt;&lt; str</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s1">std::string PrintWorkoutOptions::toString() </span><span class="s3">const </span><span class="s1">{ </span><span class="s4">// check</span>
+    <span class="s1">std::string str =</span><span class="s2">&quot;workout_options&quot;</span><span class="s3">;</span>
+    <span class="s3">return </span><span class="s1">str</span><span class="s3">;</span>
+<span class="s1">}</span><span class="s3">;</span>
+
+<span class="s1">std::string PrintWorkoutOptions::getErrortoString() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return </span><span class="s1">getErrorMsg()</span><span class="s3">;</span>
+<span class="s1">}</span>
+<span class="s1">BaseAction *PrintWorkoutOptions::clone() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return new </span><span class="s1">PrintWorkoutOptions(*</span><span class="s3">this</span><span class="s1">)</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s4">//Print Trainerstatus</span>
+<span class="s1">PrintTrainerStatus::PrintTrainerStatus(</span><span class="s3">int </span><span class="s1">id) :trainerId(id){}</span><span class="s3">;</span>
+<span class="s3">void </span><span class="s1">PrintTrainerStatus::act(Studio &amp;studio) {</span>
+    <span class="s1">Trainer *tr = studio.getTrainer(trainerId)</span><span class="s3">;</span>
+   <span class="s4">// std::cout &lt;&lt; &quot;i'm here.&quot; &lt;&lt; std::endl;</span>
+    <span class="s1">std::string str = </span><span class="s2">&quot;Trainer &quot; </span><span class="s1">+ std::to_string(trainerId)+</span><span class="s2">&quot; status: &quot;</span><span class="s3">;</span>
+    <span class="s3">if</span><span class="s1">(tr-&gt;isOpen()) {</span>
+        <span class="s1">std::vector&lt;Customer*&gt; customers = tr-&gt;getCustomers()</span><span class="s3">;</span>
+        <span class="s1">str += </span><span class="s2">&quot;open</span><span class="s3">\n</span><span class="s2">Customers:</span><span class="s3">\n</span><span class="s2">&quot;</span><span class="s3">;</span>
+        <span class="s3">for</span><span class="s1">(size_t i = </span><span class="s5">0</span><span class="s3">; </span><span class="s1">i &lt; customers.size()</span><span class="s3">; </span><span class="s1">i++) {</span>
+            <span class="s1">str += std::to_string(customers[i]-&gt;getId()) + </span><span class="s2">&quot; &quot; </span><span class="s1">+ customers[i]-&gt;getName() + </span><span class="s2">&quot;</span><span class="s3">\n</span><span class="s2">&quot;</span><span class="s3">;</span>
+        <span class="s1">}</span>
+        <span class="s1">str += </span><span class="s2">&quot;Orders:</span><span class="s3">\n</span><span class="s2">&quot;</span><span class="s3">;</span>
+        <span class="s1">std::vector&lt;OrderPair&gt;&amp;  trOrders = tr-&gt;getOrders()</span><span class="s3">;</span>
+
+        <span class="s3">for</span><span class="s1">(size_t i = </span><span class="s5">0</span><span class="s3">; </span><span class="s1">i &lt; trOrders.size()</span><span class="s3">; </span><span class="s1">i++){</span>
+            <span class="s1">Workout work = trOrders[i].second</span><span class="s3">;</span>
+            <span class="s1">str+= work.getName() + </span><span class="s2">&quot; &quot; </span><span class="s1">+ std::to_string(work.getPrice()) +</span><span class="s2">&quot;NIS &quot; </span><span class="s1">+ std::to_string(trOrders[i].first) +</span><span class="s2">&quot;</span><span class="s3">\n</span><span class="s2">&quot;</span><span class="s3">;</span>
+        <span class="s1">}</span>
+        <span class="s1">str+=</span><span class="s2">&quot;Current Trainer's Salary: &quot;</span><span class="s1">+ std::to_string(tr-&gt;getSalary()) + </span><span class="s2">&quot;NIS</span><span class="s3">\n</span><span class="s2">&quot;</span><span class="s3">;</span>
+    <span class="s1">}</span>
+    <span class="s3">else </span><span class="s1">{</span>
+        <span class="s1">str += </span><span class="s2">&quot;closed</span><span class="s3">\n</span><span class="s2">&quot;</span><span class="s3">;</span>
+    <span class="s1">}</span>
+    <span class="s1">std::cout &lt;&lt; str</span><span class="s3">;</span>
+    <span class="s1">complete()</span><span class="s3">;</span>
+<span class="s1">}</span><span class="s3">;</span>
+
+<span class="s1">std::string PrintTrainerStatus::toString() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s1">std::string str =</span><span class="s2">&quot;status &quot; </span><span class="s1">+ std::to_string(trainerId)</span><span class="s3">;</span>
+    <span class="s3">return </span><span class="s1">str</span><span class="s3">;</span>
+<span class="s1">}</span><span class="s3">;</span>
+
+<span class="s1">std::string PrintTrainerStatus::getErrortoString() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return </span><span class="s1">getErrorMsg()</span><span class="s3">;</span>
+<span class="s1">}</span>
+<span class="s1">BaseAction *PrintTrainerStatus::clone() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return new </span><span class="s1">PrintTrainerStatus(*</span><span class="s3">this</span><span class="s1">)</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s4">//print action log</span>
+<span class="s1">PrintActionsLog::PrintActionsLog() = </span><span class="s3">default;</span>
+
+<span class="s3">void </span><span class="s1">PrintActionsLog::act(Studio &amp;studio) {</span>
+
+    <span class="s1">std::string str = </span><span class="s2">&quot;&quot;</span><span class="s3">;</span>
+    <span class="s3">const </span><span class="s1">std::vector&lt;BaseAction*&gt; logs= studio.getActionsLog()</span><span class="s3">;</span>
+    <span class="s3">for</span><span class="s1">(size_t i =</span><span class="s5">0 </span><span class="s3">; </span><span class="s1">i&lt; logs.size()</span><span class="s3">;</span><span class="s1">i++){</span>
+        <span class="s1">str+=logs[i]-&gt;toString()</span><span class="s3">;</span>
+        <span class="s3">if</span><span class="s1">(logs[i]-&gt;getStatus() == COMPLETED) {</span>
+            <span class="s1">str += </span><span class="s2">&quot; Completed</span><span class="s3">\n</span><span class="s2">&quot;</span><span class="s3">;</span>
+        <span class="s1">}</span>
+        <span class="s3">else</span><span class="s1">{</span>
+
+            <span class="s1">str += </span><span class="s2">&quot; Error: &quot; </span><span class="s1">+ logs[i]-&gt;getErrortoString() +</span><span class="s2">&quot;</span><span class="s3">\n</span><span class="s2">&quot;</span><span class="s3">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+    <span class="s1">std::cout &lt;&lt; str</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+
+<span class="s1">std::string PrintActionsLog::toString() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s1">std::string str =</span><span class="s2">&quot;log&quot;</span><span class="s3">;</span>
+    <span class="s3">return </span><span class="s1">str</span><span class="s3">;</span>
+<span class="s1">}</span><span class="s3">;</span>
+
+<span class="s1">std::string PrintActionsLog::getErrortoString() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return </span><span class="s1">getErrorMsg()</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s1">BaseAction *PrintActionsLog::clone() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return new </span><span class="s1">PrintActionsLog(*</span><span class="s3">this</span><span class="s1">)</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+
+<span class="s4">//backupstudio</span>
+<span class="s1">BackupStudio::BackupStudio() {}</span><span class="s3">;</span>
+
+<span class="s3">void </span><span class="s1">BackupStudio::act(Studio &amp;studio) {</span>
+    <span class="s1">backup = </span><span class="s3">new </span><span class="s1">Studio(studio)</span><span class="s3">;</span>
+<span class="s1">}</span><span class="s3">;</span>
+
+<span class="s1">std::string BackupStudio::toString() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s1">std::string str =</span><span class="s2">&quot;backup&quot;</span><span class="s3">;</span>
+    <span class="s3">return </span><span class="s1">str</span><span class="s3">;</span>
+<span class="s1">}</span><span class="s3">;</span>
+
+<span class="s1">std::string BackupStudio::getErrortoString() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return </span><span class="s1">getErrorMsg()</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s1">BaseAction *BackupStudio::clone() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return new </span><span class="s1">BackupStudio(*</span><span class="s3">this</span><span class="s1">)</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+
+<span class="s4">//restore studio</span>
+<span class="s1">RestoreStudio::RestoreStudio() {</span>
+<span class="s1">}</span><span class="s3">;</span>
+
+
+<span class="s3">void </span><span class="s1">RestoreStudio::act(Studio &amp;studio) {</span>
+    <span class="s3">if </span><span class="s1">(backup == </span><span class="s3">nullptr</span><span class="s1">)</span>
+        <span class="s1">BaseAction::error(</span><span class="s2">&quot;No backup available&quot;</span><span class="s1">)</span><span class="s3">;</span>
+    <span class="s3">else</span>
+        <span class="s1">studio = *backup</span><span class="s3">;</span>
+<span class="s1">}</span>
+
+<span class="s1">std::string RestoreStudio::toString() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s1">std::string str =</span><span class="s2">&quot;restore&quot;</span><span class="s3">;</span>
+    <span class="s3">return </span><span class="s1">str</span><span class="s3">;</span>
+<span class="s1">}</span><span class="s3">;</span>
+
+<span class="s1">std::string RestoreStudio::getErrortoString() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return </span><span class="s1">getErrorMsg()</span><span class="s3">;</span>
+<span class="s1">}</span>
+<span class="s1">BaseAction *RestoreStudio::clone() </span><span class="s3">const </span><span class="s1">{</span>
+    <span class="s3">return new </span><span class="s1">RestoreStudio(*</span><span class="s3">this</span><span class="s1">)</span><span class="s3">;</span>
+<span class="s1">}</span>
+</pre>
+</body>
+</html>
